@@ -17,7 +17,7 @@ namespace Parcial1DPWA.Models
         // CAMBIO: Agregamos Required y un nombre claro para la vista
         [Required(ErrorMessage = "Debe describir qué contiene el paquete")]
         [Display(Name = "Descripción del Contenido")]
-        public string DescripcionContenido { get; set; }
+        public string DescripcionContenido { get; set; } = null!;
 
         [Required(ErrorMessage = "El peso es obligatorio")]
         [Column(TypeName = "decimal(10,2)")]

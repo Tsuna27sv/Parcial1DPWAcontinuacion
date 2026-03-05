@@ -32,7 +32,7 @@
                 <td>
                     @* Ajuste para asegurar que se muestre la descripción del paquete *@
                     <div class="fw-bold text-primary">
-                        @(item.Paquete != null ? item.Paquete.Descripcion : "Sin descripción")
+                        @(item.Paquete != null ? item.Paquete.DescripcionContenido : "Sin descripción")
                     </div>
                     <small class="text-muted">ID Paquete: @item.PaqueteId</small>
                 </td>

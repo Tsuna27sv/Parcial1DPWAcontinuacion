@@ -9,12 +9,12 @@ namespace Parcial1DPWA.Models
 
         [Required]
         [StringLength(100)]
-        public string NombreEstado { get; set; }
+        public string NombreEstado { get; set; } = null!;
 
         [Required]
         [StringLength(255)]
-        public string Descripcion { get; set; }
+        public string Descripcion { get; set; } = null!;
 
-        public ICollection<EstadosEnvio> EstadosEnvios { get; set; }
+        public ICollection<EstadosEnvio> EstadosEnvios { get; set; } = new List<EstadosEnvio>();
     }
 }

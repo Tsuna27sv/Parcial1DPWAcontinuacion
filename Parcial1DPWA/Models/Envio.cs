@@ -11,23 +11,23 @@ namespace Parcial1DPWA.Models
         [Required]
         public int ClienteId { get; set; }
         [ForeignKey("ClienteId")]
-        public Cliente Cliente { get; set; }
+        public Cliente Cliente { get; set; } = null!;
 
         [Required]
         public int DestinatarioId { get; set; }
         [ForeignKey("DestinatarioId")]
-        public Destinatario Destinatario { get; set; }
+        public Destinatario Destinatario { get; set; } = null!;
 
         // Añade la relación con Paquete
         [Required]
         public int PaqueteId { get; set; }
         [ForeignKey("PaqueteId")]
-        public Paquete Paquete { get; set; }
+        public Paquete Paquete { get; set; } = null!;
 
         [Required]
         public int EstadosEnvioId { get; set; }
         [ForeignKey("EstadosEnvioId")]
-        public EstadosEnvio EstadosEnvio { get; set; }
+        public EstadosEnvio EstadosEnvio { get; set; } = null!;
 
         // --- NUEVOS CAMPOS PARA LA RÚBRICA ---
 
@@ -36,7 +36,7 @@ namespace Parcial1DPWA.Models
 
         [Required]
         [Display(Name = "Departamento de Destino")]
-        public string DepartamentoDestino { get; set; } // Ej: San Salvador, San Miguel...
+        public string DepartamentoDestino { get; set; } = null!; // Ej: San Salvador, San Miguel...
 
         [Required]
         [DataType(DataType.Currency)]

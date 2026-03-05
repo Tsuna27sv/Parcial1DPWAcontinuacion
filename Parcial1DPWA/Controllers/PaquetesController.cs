@@ -44,7 +44,7 @@ namespace Parcial1DPWA.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Peso")] Paquete paquete)
+        public async Task<IActionResult> Create([Bind("Id,DescripcionContenido,Peso")] Paquete paquete)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace Parcial1DPWA.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,EnvioId,Peso")] Paquete paquete)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,EnvioId,DescripcionContenido,Peso")] Paquete paquete)
         {
             if (id != paquete.Id) return NotFound();
 

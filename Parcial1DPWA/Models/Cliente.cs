@@ -9,24 +9,24 @@ namespace Parcial1DPWA.Models
 
         [Required]
         [StringLength(100)]
-        public string Nombre { get; set; }
+        public string Nombre { get; set; } = null!;
 
         [Required]
         [StringLength(50)]
-        public string Telefono { get; set; }
+        public string Telefono { get; set; } = null!;
 
         [Required]
         [EmailAddress]
         [StringLength(150)]
-        public string Email { get; set; }
+        public string Email { get; set; } = null!;
 
         [Required]
         [StringLength(255)]
-        public string Direccion { get; set; }
+        public string Direccion { get; set; } = null!;
 
         [Required]
         public DateTime FechaRegistro { get; set; } = DateTime.Now;
 
-        public ICollection<Cliente> Clientes { get; set; }
+        public ICollection<Cliente> Clientes { get; set; } = new List<Cliente>();
     }
 }

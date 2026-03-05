@@ -44,7 +44,13 @@
                 {
                     @* Campos ocultos para el Cliente: el controlador asignará su ID automáticamente *@
                     <input type="hidden" asp-for="ClienteId" value="0" />
-                    <input type="hidden" asp-for="EstadosEnvioId" value="1" />
+                    
+                    @* Se usa el primer elemento de la lista para asignar el valor correcto *@
+                    if (ViewBag.EstadosEnvioId is SelectList selectList && selectList.Any())
+                    {
+                        var primerId = selectList.First().Value;
+                        <input type="hidden" asp-for="EstadosEnvioId" value="@primerId" />
+                    }
                 }
 
                 <div class="form-group mb-3">

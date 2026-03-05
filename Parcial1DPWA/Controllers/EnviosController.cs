@@ -32,8 +32,8 @@ namespace Parcial1DPWA.Controllers
 
             if (!User.IsInRole("Administrador"))
             {
-                var userEmail = User.Identity.Name;
-                enviosQuery = enviosQuery.Where(e => e.Cliente.Nombre == userEmail);
+                var userEmail = User.Identity!.Name;
+                enviosQuery = enviosQuery.Where(e => e.Cliente.Nombre == userEmail || e.Cliente.Email == userEmail);
             }
 
             return View(await enviosQuery.ToListAsync());
@@ -52,7 +52,7 @@ namespace Parcial1DPWA.Controllers
 
             if (envio == null) return NotFound();
 
-            if (!User.IsInRole("Administrador") && envio.Cliente.Nombre != User.Identity.Name)
+            if (!User.IsInRole("Administrador") && envio.Cliente.Nombre != User.Identity!.Name && envio.Cliente.Email != User.Identity!.Name)
             {
                 return Forbid();
             }
@@ -78,13 +78,31 @@ namespace Parcial1DPWA.Controllers
                 // 2. Si es un Usuario normal, asignamos su ID automáticamente
                 if (!User.IsInRole("Administrador"))
                 {
-                    var nombreUsuario = User.Identity.Name;
-                    var cliente = await _context.Clientes.FirstOrDefaultAsync(c => c.Nombre == nombreUsuario);
+                    var nombreUsuario = User.Identity!.Name;
+                    var cliente = await _context.Clientes.FirstOrDefaultAsync(c => c.Nombre == nombreUsuario || c.Email == nombreUsuario);
                     if (cliente != null)
                     {
                         envio.ClienteId = cliente.Id;
                     }
-                    envio.EstadosEnvioId = 1; // Forzar "Pendiente" para clientes
+                    else
+                    {
+                        // Si no existe, creamos un registro de Cliente básico para este usuario
+                        var usuarioApp = await _context.Users.FirstOrDefaultAsync(u => u.UserName == nombreUsuario);
+                        
+                        var nuevoCliente = new Cliente 
+                        { 
+                            Nombre = usuarioApp?.NombreCompleto ?? nombreUsuario,
+                            Email = nombreUsuario,
+                            Telefono = "0000-0000",
+                            Direccion = "No especificada"
+                        };
+                        _context.Clientes.Add(nuevoCliente);
+                        await _context.SaveChangesAsync();
+                        
+                        envio.ClienteId = nuevoCliente.Id;
+                    }
+                    var defaultState = await _context.EstadosEnvios.FirstOrDefaultAsync();
+                    envio.EstadosEnvioId = defaultState?.Id ?? 0; // Se asignará el primero que exista en la DB
                 }
 
                 // 3. Guardar en la base de datos
@@ -125,6 +143,8 @@ namespace Parcial1DPWA.Controllers
             if (id != envio.Id) return NotFound();
 
             var envioDb = await _context.Envios.AsNoTracking().FirstOrDefaultAsync(e => e.Id == id);
+            
+            if (envioDb == null) return NotFound();
 
             if (!User.IsInRole("Administrador") && envioDb.EstadosEnvioId != 1)
             {
@@ -184,14 +204,16 @@ namespace Parcial1DPWA.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private void CargarListas(Envio envio = null)
+        private void CargarListas(Envio? envio = null)
         {
             // Listas de Clientes y Estados
             ViewData["ClienteId"] = new SelectList(_context.Clientes, "Id", "Nombre", envio?.ClienteId);
 
             if (!User.IsInRole("Administrador"))
             {
-                ViewData["EstadosEnvioId"] = new SelectList(_context.EstadosEnvios.Where(e => e.Id == 1), "Id", "NombreEstado", 1);
+                var defaultState = _context.EstadosEnvios.FirstOrDefault();
+                int stateId = defaultState?.Id ?? 0;
+                ViewData["EstadosEnvioId"] = new SelectList(_context.EstadosEnvios.Where(e => e.Id == stateId), "Id", "NombreEstado", stateId);
             }
             else
             {
@@ -202,7 +224,7 @@ namespace Parcial1DPWA.Controllers
 
             // CARGAR PAQUETES: Aseguramos que la lista se cargue siempre
             var listaPaquetes = _context.Paquetes.ToList();
-            ViewData["PaqueteId"] = new SelectList(listaPaquetes, "Id", "Descripcion", envio?.PaqueteId);
+            ViewData["PaqueteId"] = new SelectList(listaPaquetes, "Id", "DescripcionContenido", envio?.PaqueteId);
         }
 
         private bool EnvioExists(int id)
