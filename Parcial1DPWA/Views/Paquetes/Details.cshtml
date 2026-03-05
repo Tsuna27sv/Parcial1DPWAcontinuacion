@@ -1,0 +1,41 @@
+﻿@model Parcial1DPWA.Models.Paquete
+
+@{
+    ViewData["Title"] = "Detalles del Paquete - Small Box";
+}
+
+<h1>Detalles del Paquete</h1>
+
+<div>
+    <h4>Información de Inventario</h4>
+    <hr />
+    <dl class="row">
+        @* CAMBIO CLAVE: Agregamos la descripción del contenido para que aparezca "camara" *@
+        <dt class="col-sm-3 fw-bold">
+            ¿Qué contiene el paquete?
+        </dt>
+        <dd class="col-sm-9 text-primary fw-bold">
+            @Html.DisplayFor(model => model.Descripcion)
+        </dd>
+
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Peso) (lb/kg)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Peso) lb
+        </dd>
+
+        <dt class="col-sm-3">
+            Estado de Asignación
+        </dt>
+        <dd class="col-sm-9">
+            @* Mostramos el destino si ya está asociado a un envío *@
+            @(Model.Envio != null ? "Asignado a: " + Model.Envio.DepartamentoDestino : "Disponible para envío")
+        </dd>
+    </dl>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning">Editar</a> |
+    <a asp-action="Index" class="btn btn-secondary">Regresar al Inventario</a>
+</div>

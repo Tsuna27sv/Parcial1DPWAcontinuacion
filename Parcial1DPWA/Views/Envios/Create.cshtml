@@ -1,0 +1,110 @@
+﻿@model Parcial1DPWA.Models.Envio
+
+@{
+    ViewData["Title"] = "Nuevo Envío - Small Box";
+}
+
+<div class="container mt-4">
+    <h1>Registrar Envío</h1>
+    <h4>Ficha de Control de Paquetes</h4>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                @if (User.IsInRole("Administrador"))
+                {
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted">Panel de Administrador</h5>
+                            <div class="form-group mb-3">
+                                <label asp-for="ClienteId" class="control-label fw-bold">Asignar a Cliente</label>
+                                <select asp-for="ClienteId" class="form-control" asp-items="ViewBag.ClienteId">
+                                    <option value="">-- Seleccione el Cliente --</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label asp-for="EstadosEnvioId" class="control-label fw-bold">Estado Inicial</label>
+                                <select asp-for="EstadosEnvioId" class="form-control" asp-items="ViewBag.EstadosEnvioId">
+                                    <option value="">-- Seleccione un Estado --</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="FechaCreacion" class="control-label fw-bold">Fecha de Registro</label>
+                                <input asp-for="FechaCreacion" class="form-control" type="datetime-local" />
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @* Campos ocultos para el Cliente: el controlador asignará su ID automáticamente *@
+                    <input type="hidden" asp-for="ClienteId" value="0" />
+                    <input type="hidden" asp-for="EstadosEnvioId" value="1" />
+                }
+
+                <div class="form-group mb-3">
+                    <label asp-for="DestinatarioId" class="control-label fw-bold">¿A quién se le envía? (Destinatario)</label>
+                    <select asp-for="DestinatarioId" class="form-control" asp-items="ViewBag.DestinatarioId">
+                        <option value="">-- Seleccione un Destinatario --</option>
+                    </select>
+                    <span asp-validation-for="DestinatarioId" class="text-danger"></span>
+                    <small class="text-muted">Si no aparece, regístralo primero en el menú de Destinatarios.</small>
+                </div>
+
+                @* SECCIÓN DE PRODUCTO: Muestra el nombre registrado en Paquetes *@
+                <div class="form-group mb-3">
+                    <label asp-for="PaqueteId" class="control-label fw-bold">Producto / Paquete registrado</label>
+                    <select asp-for="PaqueteId" class="form-control" asp-items="ViewBag.PaqueteId">
+                        <option value="">-- Seleccione el paquete que registró anteriormente --</option>
+                    </select>
+                    <span asp-validation-for="PaqueteId" class="text-danger"></span>
+                    <small class="text-muted">Selecciona el producto que registraste en el inventario.</small>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="DepartamentoDestino" class="control-label fw-bold">Departamento de Destino</label>
+                    <select asp-for="DepartamentoDestino" class="form-control">
+                        <option value="">-- Seleccione un departamento --</option>
+                        <option value="Ahuachapán">Ahuachapán</option>
+                        <option value="Cabañas">Cabañas</option>
+                        <option value="Chalatenango">Chalatenango</option>
+                        <option value="Cuscatlán">Cuscatlán</option>
+                        <option value="La Libertad">La Libertad</option>
+                        <option value="La Paz">La Paz</option>
+                        <option value="La Unión">La Unión</option>
+                        <option value="Morazán">Morazán</option>
+                        <option value="San Miguel">San Miguel</option>
+                        <option value="San Salvador">San Salvador</option>
+                        <option value="San Vicente">San Vicente</option>
+                        <option value="Santa Ana">Santa Ana</option>
+                        <option value="Sonsonate">Sonsonate</option>
+                        <option value="Usulután">Usulután</option>
+                    </select>
+                    <span asp-validation-for="DepartamentoDestino" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="MontoTotal" class="control-label fw-bold">Monto Total a Pagar ($)</label>
+                    <input asp-for="MontoTotal" class="form-control" placeholder="0.00" type="number" step="0.01" />
+                    <span asp-validation-for="MontoTotal" class="text-danger"></span>
+                </div>
+
+                <div class="form-group d-flex gap-2">
+                    <button type="submit" class="btn btn-primary px-4">🚀 Guardar y Generar Orden</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

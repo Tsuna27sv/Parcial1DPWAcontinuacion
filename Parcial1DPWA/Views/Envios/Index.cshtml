@@ -1,0 +1,82 @@
+﻿@model IEnumerable<Parcial1DPWA.Models.Envio>
+
+@{
+    ViewData["Title"] = "Gestión de Envíos - Small Box";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Gestión de Envíos</h1>
+    <a asp-action="Create" class="btn btn-primary">📦 Registrar Nuevo Envío</a>
+</div>
+
+<table class="table table-striped table-hover border">
+    <thead class="table-dark">
+        <tr>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Destinatario</th>
+            <th>Producto / Contenido</th>
+            <th>Estado</th>
+            <th>Destino</th>
+            <th>Monto Total</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@Html.DisplayFor(modelItem => item.Cliente.Nombre)</td>
+                <td>@Html.DisplayFor(modelItem => item.Destinatario.Nombre)</td>
+                <td>
+                    @* Ajuste para asegurar que se muestre la descripción del paquete *@
+                    <div class="fw-bold text-primary">
+                        @(item.Paquete != null ? item.Paquete.Descripcion : "Sin descripción")
+                    </div>
+                    <small class="text-muted">ID Paquete: @item.PaqueteId</small>
+                </td>
+                <td>
+                    @{
+                        var claseColor = "bg-secondary";
+                        var estadoTexto = item.EstadosEnvio?.NombreEstado?.ToLower() ?? "";
+
+                        if (estadoTexto.Contains("enviando") || estadoTexto.Contains("camino"))
+                        {
+                            claseColor = "bg-primary";
+                        }
+                        else if (estadoTexto.Contains("recibido") || estadoTexto.Contains("entregado"))
+                        {
+                            claseColor = "bg-success";
+                        }
+                        else if (estadoTexto.Contains("retenido") || estadoTexto.Contains("cancelado"))
+                        {
+                            claseColor = "bg-danger";
+                        }
+                    }
+                    <span class="badge @claseColor" style="padding: 0.6em; font-size: 0.85em;">
+                        @(item.EstadosEnvio?.NombreEstado ?? "N/A")
+                    </span>
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.DepartamentoDestino)</td>
+                <td class="fw-bold text-success">$@Html.DisplayFor(modelItem => item.MontoTotal)</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        @* REGLA: Solo Admin o Cliente con envío Pendiente (ID 1) pueden editar/borrar *@
+                        @if (User.IsInRole("Administrador") || (User.IsInRole("Usuario") && item.EstadosEnvioId == 1))
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning">Editar</a>
+                        }
+
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info">Ver</a>
+
+                        @if (User.IsInRole("Administrador") || (User.IsInRole("Usuario") && item.EstadosEnvioId == 1))
+                        {
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Borrar</a>
+                        }
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
